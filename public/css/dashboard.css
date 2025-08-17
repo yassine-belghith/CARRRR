@@ -1,0 +1,21 @@
+.dashboard {
+    margin-top: 70px;
+    width: 100%;
+    height: 91vh;
+}
+.dashboard .tables .item:hover {
+    background-color: white;
+    color: black;
+    cursor: pointer;
+}
+.dashboard .tables .item {
+    color: white;
+    text-decoration: none;
+}
+.dashboard .details {
+    max-height: 100%;
+    overflow: scroll;
+}
+::-webkit-scrollbar{
+    width: 0px;
+}

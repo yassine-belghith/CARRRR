@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background with gradient -->
+    <rect width="200" height="60" rx="5" fill="url(#paint0_linear)"/>
+    
+    <!-- Car Icon -->
+    <path d="M35 35H25L28 25H32L35 35Z" fill="white"/>
+    <circle cx="28" cy="40" r="3" fill="#2c3e50"/>
+    <circle cx="32" cy="40" r="3" fill="#2c3e50"/>
+    <path d="M30 25H25V30H30V25Z" fill="white"/>
+    
+    <!-- Text -->
+    <text x="50" y="35" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white">CAR RENTAL</text>
+    <text x="50" y="50" font-family="Arial, sans-serif" font-size="12" font-style="italic" fill="#f1c40f">Premium Services</text>
+    
+    <!-- Gradient Definition -->
+    <defs>
+        <linearGradient id="paint0_linear" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#2c3e50;stop-opacity:1" />
+        </linearGradient>
+    </defs>
+</svg>

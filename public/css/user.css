@@ -1,0 +1,23 @@
+/* Contact Specific */
+.contact .form-label,
+.contact h2,
+.contact .form-control,
+.contact textarea,
+.contact p,
+.contact label {
+    color: #000 !important;
+}
+
+/* Login Specific */
+.login {
+    margin-top: 70px;
+    width: 100%;
+    min-height: 91vh;
+    height: auto;
+    background-image: url(../assets/v1.webp);
+    background-size: cover;
+}
+.login .form {
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+}

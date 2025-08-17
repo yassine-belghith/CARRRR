@@ -1,0 +1,370 @@
+.header {
+    min-height: 70px;
+    height: auto;
+}
+/* Hero Section */
+.hero-section {
+    position: relative;
+    height: 95vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    overflow: hidden;
+}
+
+.hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -2;
+    transform: translateX(-50%) translateY(-50%);
+    background-size: cover;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+.hero-content {
+    z-index: 1;
+    max-width: 900px;
+    padding: 0 20px;
+}
+
+.hero-content h1 {
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+}
+
+.booking-form-container {
+    max-width: 850px;
+    margin: 0 auto;
+    backdrop-filter: blur(5px);
+    background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.booking-form-container .form-label {
+    text-align: left;
+    display: block;
+    margin-bottom: .5rem;
+    font-weight: 500;
+}
+
+@media (max-width: 992px) {
+    .booking-form-container .btn {
+        margin-top: 1rem;
+    }
+}
+.about {
+    background-color: aliceblue;
+    width: 100%
+}
+.about-container img {
+    width: 52%;
+    height: 400px;
+    object-fit: cover;
+    object-position: center;
+}
+.about-container .content {
+    width: 45%;
+    height: 400px;
+}
+.about-container .content p {
+    text-align: justify;
+}
+.innovation {
+    background-color: white;
+    width: 100%;
+}
+.innovation .item .number {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+.products {
+    background-color: rgba(240, 255, 255, 0.721);
+}
+.products .all-products .item {
+    width: 275px;
+    height: 375px;
+    box-shadow: 0px 0px 1px 1px rgba(0, 0, 0, 0.361);
+}
+.products .all-products .item img {
+    width: 100%;
+    height: 60%;
+    object-fit: cover;
+}
+.text-justify {
+    text-align: justify;
+}
+
+/* Testimonial Section */
+.testimony-section {
+    background-color: #f8f9fa;
+}
+
+.testimonial-card {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.testimonial-card img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto;
+    border: 4px solid #fff;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    padding: 1.5rem;
+    background-size: 50% 50%;
+}
+
+/* Newsletter Section */
+.newsletter-section {
+    background: url('../assets/banner.png') no-repeat center center;
+    background-size: cover;
+    position: relative;
+    padding: 6rem 0;
+}
+
+.newsletter-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(41, 128, 185, 0.8);
+    z-index: 1;
+}
+
+.newsletter-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+.newsletter-form-modern {
+    max-width: 600px;
+}
+
+.newsletter-form-modern .form-control {
+    border-radius: 30px 0 0 30px;
+    border: none;
+    padding: 1.5rem 1.5rem;
+}
+
+.newsletter-form-modern .btn {
+    border-radius: 0 30px 30px 0;
+    padding: 0 2rem;
+    font-weight: 600;
+}
+
+/* Why Us Section */
+.why-us .feature-card {
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 0.75rem;
+    transition: all 0.3s ease-in-out;
+}
+
+.why-us .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.why-us .feature-icon {
+    display: inline-block;
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    border-radius: 50%;
+    background-color: rgba(79, 70, 229, 0.1);
+    color: var(--primary);
+    transition: all 0.3s ease;
+}
+
+.why-us .feature-card:hover .feature-icon {
+    transform: scale(1.1) rotate(10deg);
+}
+
+/* Car Showcase Section */
+.car-showcase .car-card {
+    transition: all 0.3s ease-in-out;
+}
+
+.car-showcase .car-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+.car-showcase .card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.car-showcase .price {
+    font-weight: 600;
+}
+.hero-section, .banner {
+    height: 100vh;
+    width: 100vw;
+    background-size: cover;
+    background-position: center;
+}
+
+
+/* --- Special Animated Homepage Design --- */
+
+/* Animated Gradient Background */
+body {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: white;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Hero Section Styles */
+.hero-section, .banner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100vh;
+    padding: 0 20px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+.hero-section h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.hero-section .btn-primary {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.hero-section .btn-primary:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-3px);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- End of Special Design --- */
+
+
+
+/* --- Enhanced Homepage Design --- */
+
+/* 1. Ken Burns Effect for Background */
+.hero-section, .banner {
+    overflow: hidden; /* Important for the zoom effect */
+}
+
+.hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: inherit; /* Use the same image as the element */
+    background-size: cover;
+    background-position: center;
+    animation: kenBurns 20s ease-out infinite;
+    z-index: -1;
+}
+
+@keyframes kenBurns {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* 2. Glassmorphism Search Form */
+.search-form-container {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    padding: 30px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.search-form-container .form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.search-form-container .form-control::placeholder {
+    color: #ccc;
+}
+
+/* --- End of Enhanced Design --- */
+
+
+
+/* Positioning for hero section animation */
+.hero-section, .banner {
+    position: relative;
+}
+
+
+
+/* --- Full-Screen Background Image Fix --- */
+
+/* Ensure the main hero container takes up the full viewport height */
+.hero-section, .banner, .main-banner {
+    min-height: 100vh !important; /* Use min-height and !important to override other styles */
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover !important;
+    background-position: center center !important;
+}
+
+/* Ensure body and html take full height */
+html, body {
+    height: 100%;
+}
+
+/* --- End of Fix --- */
+

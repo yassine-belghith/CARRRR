@@ -1,0 +1,119 @@
+/* Footer Styles */
+.footer {
+    background-color: #1a1a1a;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #40aaf1, #2980b9);
+}
+
+.footer h5 {
+    color: #fff;
+    font-size: 1.25rem;
+    position: relative;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.footer h5::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 50px;
+    height: 2px;
+    background: #40aaf1;
+}
+
+.footer .social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.footer .social-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #fff;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.footer .social-icon:hover {
+    background: #40aaf1;
+    transform: translateY(-3px);
+}
+
+.footer .list-unstyled li {
+    margin-bottom: 10px;
+}
+
+.footer .list-unstyled a {
+    color: #adb5bd;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.footer .list-unstyled a:hover {
+    color: #fff;
+    padding-left: 5px;
+}
+
+.footer .newsletter-form .form-control {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    height: 45px;
+}
+
+.footer .newsletter-form .form-control::placeholder {
+    color: #adb5bd;
+}
+
+.footer .newsletter-form .btn {
+    height: 45px;
+    background: #40aaf1;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.footer .newsletter-form .btn:hover {
+    background: #2980b9;
+}
+
+.footer hr {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .footer {
+        text-align: center;
+    }
+    
+    .footer h5::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .footer .social-links {
+        justify-content: center;
+    }
+    
+    .footer .list-unstyled a:hover {
+        padding-left: 0;
+    }
+}

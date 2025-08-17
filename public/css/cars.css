@@ -1,0 +1,453 @@
+
+/* Reset et styles de base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --primary-color: #40aaf1;
+    --primary-hover: #2980b9;
+    --text-color: #333;
+    --light-gray: #f8f9fa;
+    --border-color: #e0e0e0;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Section Innovation */
+.innovation {
+    background-color: white;
+    width: 100%;
+    padding: 2rem 0;
+}
+
+.innovation .item .number {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    margin: 0 auto 1rem;
+}
+
+/* Section Produits */
+.products {
+    background-color: #f8f9fa;
+    padding: 2rem 0;
+    min-height: calc(100vh - 70px);
+}
+
+.page-title {
+    color: #2c3e50;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.page-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+/* Filtres */
+.filtre {
+    padding: 0;
+}
+
+.filtre-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    position: sticky;
+    top: 100px;
+}
+
+.filter-section {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.filter-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.filter-section h6 {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-check {
+    margin-bottom: 0.5rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-label {
+    color: #555;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.filtre-header {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+}
+
+/* Grille des produits */
+.all-products {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    padding: 0;
+    width: 100%;
+}
+
+/* Adjust card width for 3 columns */
+.products .all-products .item {
+    width: 100%;
+}
+
+.products .all-products .item {
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.products .all-products .item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.car-image {
+    height: 180px;
+    overflow: hidden;
+}
+
+.car-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.item:hover .car-image img {
+    transform: scale(1.05);
+}
+
+.products .all-products .item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.item-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.car-brand {
+    color: #2c3e50;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.car-details {
+    margin-bottom: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.detail-item i {
+    color: var(--primary-color);
+    width: 20px;
+    text-align: center;
+    margin-right: 0.5rem;
+}
+
+.detail-item.price {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.detail-item.price strong {
+    color: var(--primary-color);
+    font-size: 1.2em;
+}
+
+.item-content {
+    padding: 1.25rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* This will push the content and button apart */
+}
+
+.btn-voir-plus {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+    width: 100%;
+}
+
+.btn-voir-plus:hover {
+    background-color: var(--primary-hover);
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.item .fw-light {
+    margin: 0.5rem 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Boutons */
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: auto;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    color: white;
+    text-decoration: none;
+}
+
+/* Liens */
+.lien {
+    color: white;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.lien:hover {
+    color: #f1f1f1;
+    text-decoration: none;
+}
+
+/* Sections spécifiques */
+.contact,
+.detail,
+.rentals {
+    padding: 2rem 5%;
+    min-height: calc(100vh - 70px);
+    margin-top: 70px;
+}
+
+.detail {
+    max-width: 1200px;
+    margin: 70px auto 0;
+    padding: 2rem;
+}
+
+.detail .planification .reservations {
+    max-height: 50vh;
+    overflow-y: auto;
+    padding-right: 1rem;
+}
+
+.rentals {
+    background-color: #f8fafc;
+}
+
+/* Barre de défilement personnalisée */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #bdc3c7;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #95a5a6;
+}
+
+/* Search Container */
+.search-container {
+    margin-bottom: 2rem;
+}
+
+.search-container .form-control {
+    height: 48px;
+    border-radius: 6px 0 0 6px;
+    border: 1px solid #ced4da;
+    border-right: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+}
+
+.search-container .btn {
+    border-radius: 0 6px 6px 0;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+}
+
+/* No Results */
+.no-results {
+    grid-column: 1 / -1;
+    padding: 3rem 1rem;
+    text-align: center;
+    color: #6c757d;
+}
+
+.no-results i {
+    color: #dee2e6;
+    margin-bottom: 1rem;
+}
+
+.no-results h4 {
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* Réactivité */
+@media (max-width: 992px) {
+    .filtre-container {
+        margin-bottom: 2rem;
+        position: static;
+    }
+    
+    .all-products {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+    
+    .all-products {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+    
+    .search-container .form-control,
+    .search-container .btn {
+        height: 44px;
+    }
+}
+
+@media (max-width: 576px) {
+    .products {
+        padding: 1.5rem 0;
+    }
+    
+    .page-title {
+        font-size: 1.5rem;
+    }
+    
+    .all-products {
+        grid-template-columns: 1fr;
+    }
+    
+    .car-image {
+        height: 200px;
+    }
+    
+    .item-content {
+        padding: 1.25rem;
+    }
+    
+    .car-brand {
+        font-size: 1.1rem;
+    }
+    
+    .detail-item {
+        font-size: 0.9rem;
+    }
+    
+    .btn-voir-plus {
+        padding: 0.65rem 1.25rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .all-products {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+    
+    .detail,
+    .contact,
+    .rentals {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .all-products {
+        grid-template-columns: 1fr;
+    }
+    
+    .products .all-products .item {
+        max-width: 100%;
+    }
+}
