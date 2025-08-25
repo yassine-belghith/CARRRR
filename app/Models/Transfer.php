@@ -20,11 +20,18 @@ class Transfer extends Model
         'user_id',
         'driver_id',
         'driver_confirmation_status',
+        'job_status',
+        'job_started_at',
+        'job_completed_at',
         'car_id',
+        'pickup_location_id',
+        'dropoff_location_id',
         'pickup_latitude',
         'pickup_longitude',
+        'pickup_location_name',
         'dropoff_latitude',
         'dropoff_longitude',
+        'dropoff_location_name',
         'pickup_datetime',
         'return_datetime',
         'flight_number',
@@ -57,7 +64,13 @@ class Transfer extends Model
     protected $casts = [
         'pickup_datetime' => 'datetime',
         'return_datetime' => 'datetime',
+        'job_started_at' => 'datetime',
+        'job_completed_at' => 'datetime',
         'price' => 'decimal:2',
+        'pickup_latitude' => 'float',
+        'pickup_longitude' => 'float',
+        'dropoff_latitude' => 'float',
+        'dropoff_longitude' => 'float',
     ];
 
     /**
@@ -85,6 +98,19 @@ class Transfer extends Model
     }
 
     /**
+     * Pickup and dropoff destination relationships.
+     */
+    public function pickupDestination()
+    {
+        return $this->belongsTo(Destination::class, 'pickup_location_id');
+    }
+
+    public function dropoffDestination()
+    {
+        return $this->belongsTo(Destination::class, 'dropoff_location_id');
+    }
+
+    /**
      * Get the human-readable status label.
      *
      * @return string
@@ -96,6 +122,9 @@ class Transfer extends Model
             'confirmed' => 'Confirmé',
             'assigned' => 'Assigné',
             'on_the_way' => 'En route',
+            'driver_en_route' => 'En route',
+            'driver_arrived' => 'Chauffeur arrivé',
+            'in_progress' => 'En cours',
             'completed' => 'Terminé',
             'cancelled' => 'Annulé',
             'no_show' => 'Non-présentation',
@@ -116,6 +145,9 @@ class Transfer extends Model
             'confirmed' => 'primary',
             'assigned' => 'info',
             'on_the_way' => 'warning',
+            'driver_en_route' => 'warning',
+            'driver_arrived' => 'info',
+            'in_progress' => 'primary',
             'completed' => 'success',
             'cancelled' => 'danger',
             'no_show' => 'dark',
@@ -123,4 +155,5 @@ class Transfer extends Model
 
         return $classes[$this->status] ?? 'light';
     }
+
 }

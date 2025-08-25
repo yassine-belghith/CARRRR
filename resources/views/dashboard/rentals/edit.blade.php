@@ -7,9 +7,6 @@
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">Modifier la Location #{{ $rental->id }}</h4>
-                    <a href="{{ route('dashboard.rentals.index') }}" class="btn btn-secondary btn-sm float-right">
-                        <i class="fas fa-arrow-left"></i> Retour
-                    </a>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('dashboard.rentals.update', $rental->id) }}" method="POST">

@@ -291,18 +291,17 @@ $breadcrumbs = [
         border: none;
         border-radius: 12px;
         box-shadow: var(--card-shadow);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        /* limit transitions to avoid layout thrash */
+        transition: box-shadow 160ms ease;
         overflow: hidden;
     }
 
     .card:hover {
-        transform: translateY(-5px);
+        /* remove translate to prevent repaints */
         box-shadow: var(--card-hover-shadow);
     }
 
-    .card .card-body {
-        padding: 1.5rem;
-    }
+    .card .card-body { padding: 1.5rem; }
 
     .border-left-primary {
         border-left: 4px solid var(--primary-color) !important;
@@ -373,9 +372,7 @@ $breadcrumbs = [
         border: 1px solid var(--medium-gray);
     }
 
-    .action-card:hover .card-footer {
-        background-color: var(--light-gray);
-    }
+    .action-card:hover .card-footer { background-color: var(--light-gray); }
 
     .icon-shape {
         width: 3.5rem;

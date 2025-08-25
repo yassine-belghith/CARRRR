@@ -40,6 +40,7 @@
                             <hr>
                             <p><strong>Date de début:</strong> {{ optional($rental->start_date)->format('d/m/Y') }}</p>
                             <p><strong>Date de fin:</strong> {{ optional($rental->end_date)->format('d/m/Y') }}</p>
+                            <p><strong>Lieu de départ:</strong> {{ $rental->location->name ?? 'Non spécifié' }}</p>
                             <p><strong>Nombre de jours:</strong> {{ $rental->start_date ? $rental->start_date->diffInDays($rental->end_date) + 1 : 'N/A' }}</p>
                         </div>
                         <div class="col-md-6">

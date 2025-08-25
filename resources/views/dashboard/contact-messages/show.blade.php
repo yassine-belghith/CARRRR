@@ -8,7 +8,7 @@
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold text-primary">Détails du message</h6>
                     <div>
-                        <a href="{{ route('dashboard.contact.messages.index') }}" class="btn btn-sm btn-secondary">
+                                                <a href="{{ route('dashboard.contact-messages.index') }}" class="btn btn-sm btn-secondary">
                             <i class="fas fa-arrow-left me-1"></i> Retour
                         </a>
                         <button type="button" class="btn btn-sm {{ $contactMessage->is_read ? 'btn-warning' : 'btn-info' }}" 
@@ -94,7 +94,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                <form action="{{ route('dashboard.contact.messages.destroy', $contactMessage) }}" method="POST" class="d-inline">
+                                <form action="{{ route('dashboard.contact-messages.destroy', $contactMessage) }}" method="POST" class="d-inline">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">Supprimer</button>
@@ -114,7 +114,7 @@ $(document).ready(function() {
         const messageId = button.data('id');
         
         $.ajax({
-            url: '{{ route("dashboard.contact.messages.toggle-read", ['contactMessage' => $contactMessage->id]) }}',
+            url: '{{ route("dashboard.contact-messages.toggle-read", ['contactMessage' => $contactMessage->id]) }}',
             type: 'POST',
             data: {
                 _token: '{{ csrf_token() }}'

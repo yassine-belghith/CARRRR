@@ -41,8 +41,12 @@ class TransferVoucherMail extends Mailable
      */
     public function content(): Content
     {
+        // Use Markdown so mail:: components are available
         return new Content(
-            view: 'emails.transfers.voucher_notification',
+            markdown: 'emails.transfers.voucher_notification',
+            with: [
+                'transfer' => $this->transfer,
+            ],
         );
     }
 

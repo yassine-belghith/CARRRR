@@ -26,4 +26,14 @@ class Location extends Model
         'opening_hours_weekends' => 'datetime',
         'closing_hours_weekends' => 'datetime',
     ];
+
+    public function drivers()
+    {
+        return $this->belongsToMany(User::class, 'driver_locations', 'location_id', 'driver_id');
+    }
+
+    public function rentals()
+    {
+        return $this->hasMany(Rental::class);
+    }
 }

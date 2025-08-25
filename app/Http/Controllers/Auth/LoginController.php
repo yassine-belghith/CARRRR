@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Exception;
 
 class LoginController extends Controller
 {
@@ -34,8 +38,8 @@ class LoginController extends Controller
             return redirect()->route('dashboard.index');
         }
 
-        if ($user->driver == 1) {
-            return redirect()->route('drivers.index');
+        if ((int) $user->is_driver === 1) {
+            return redirect()->route('driver.dashboard');
         }
 
         return redirect()->route('car.acceuil');
@@ -67,5 +71,53 @@ class LoginController extends Controller
     public function showLoginForm()
     {
         return view('login');
+    }
+
+    /**
+     * Redirect the user to the Google authentication page.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function redirectToGoogle()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    /**
+     * Obtain the user information from Google.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function handleGoogleCallback()
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+
+            $user = User::where('google_id', $googleUser->id)->first();
+
+            if ($user) {
+                Auth::login($user);
+                return $this->authenticated(request(), $user);
+            } else {
+                $user = User::where('email', $googleUser->email)->first();
+
+                if ($user) {
+                    $user->update(['google_id' => $googleUser->id]);
+                } else {
+                    $user = User::create([
+                        'name' => $googleUser->name,
+                        'email' => $googleUser->email,
+                        'google_id' => $googleUser->id,
+                        'avatar' => $googleUser->avatar,
+                        'password' => null, // or bcrypt(Str::random(16))
+                    ]);
+                }
+
+                Auth::login($user);
+                return $this->authenticated(request(), $user);
+            }
+        } catch (Exception $e) {
+            return redirect()->route('login')->with('error', 'Something went wrong or you have rejected the app.');
+        }
     }
 }

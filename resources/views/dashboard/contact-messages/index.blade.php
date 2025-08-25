@@ -8,7 +8,7 @@
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h6 class="m-0 font-weight-bold text-primary">Messages de contact</h6>
                     <div class="d-flex">
-                        <a href="{{ route('dashboard.contact.messages.export') }}" class="btn btn-sm btn-success me-2">
+                                                <a href="{{ route('dashboard.contact-messages.export') }}" class="btn btn-sm btn-success me-2">
                             <i class="fas fa-file-export me-1"></i> Exporter
                         </a>
                     </div>
@@ -49,13 +49,13 @@
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            <a href="{{ route('dashboard.contact.messages.show', $message) }}" 
+                                            <a href="{{ route('dashboard.contact-messages.show', $message) }}" 
                                                class="btn btn-sm btn-info"
                                                title="Voir les détails">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                             
-                                            <form action="{{ route('dashboard.contact.messages.destroy', $message) }}" 
+                                            <form action="{{ route('dashboard.contact-messages.destroy', $message) }}" 
                                                   method="POST" 
                                                   class="d-inline"
                                                   onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce message ?')">
@@ -66,7 +66,7 @@
                                                 </button>
                                             </form>
                                             
-                                            <form action="{{ route('dashboard.contact.messages.toggle-read', $message) }}" 
+                                            <form action="{{ route('dashboard.contact-messages.toggle-read', $message) }}" 
                                                   method="POST" 
                                                   class="d-inline"
                                                   onsubmit="return confirm('Voulez-vous vraiment {{ $message->is_read ? 'marquer comme non lu' : 'marquer comme lu' }} ce message ?')">

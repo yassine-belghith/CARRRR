@@ -133,24 +133,24 @@
                     </a>
                 </div>
             @else
-                <form method="POST" action="{{ route('rental.user.store', ['carId' => $car->id ]) }}">
+                <form method="POST" action="{{ route('rental.user.store', $car) }}" enctype="multipart/form-data">
                     @csrf
                     <div>
                         <label for="pickupDate">Date de prise en charge :</label>
-                        <input type="date" id="pickupDate" class="form-control" name="rental_date" />
+                        <input type="date" id="pickupDate" class="form-control" name="start_date" />
                     </div>
                     <div class="mt-3">
                         <label for="returnDate">Date de retour :</label>
-                        <input type="date" id="returnDate" class="form-control" name="return_date" />
+                        <input type="date" id="returnDate" class="form-control" name="end_date" />
                     </div>
-                    <div class="mt-3">
-                        <label for="driver_id">Chauffeur :</label>
-                        <select id="driver_id" class="form-control" name="driver_id">
-                            <option value="">Aucun</option>
-                            @foreach($drivers as $driver)
-                                <option value="{{ $driver->id }}">{{ $driver->name }}</option>
-                            @endforeach
-                        </select>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input" type="checkbox" value="1" id="needs_driver_detail" name="needs_driver">
+                        <label class="form-check-label" for="needs_driver_detail">J’ai besoin d’un chauffeur</label>
+                    </div>
+                    <div id="license_wrap_detail" class="mt-3" style="display:none;">
+                        <label for="driver_license_detail" class="form-label">Importer une photo de votre permis (jpg, png, pdf)</label>
+                        <input type="file" id="driver_license_detail" class="form-control" name="driver_license" accept=".jpg,.jpeg,.png,.pdf" />
+                        <div class="form-text">Requis si vous ne demandez pas un chauffeur.</div>
                     </div>
 
                     @if(session('error'))
@@ -200,6 +200,18 @@
         });
         calendar.render();
         console.log('Calendar rendered.');
+
+        // Toggle license upload when chauffeur is NOT needed
+        var needsDriverDetail = document.getElementById('needs_driver_detail');
+        var licenseWrapDetail = document.getElementById('license_wrap_detail');
+        function updateLicenseDetailVisibility() {
+            if (!needsDriverDetail || !licenseWrapDetail) return;
+            licenseWrapDetail.style.display = needsDriverDetail.checked ? 'none' : 'block';
+        }
+        if (needsDriverDetail) {
+            needsDriverDetail.addEventListener('change', updateLicenseDetailVisibility);
+            updateLicenseDetailVisibility();
+        }
     });
 </script>
 @endpush

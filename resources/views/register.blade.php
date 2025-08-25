@@ -1,5 +1,7 @@
 @include('_header')
 <style>
+    
+    
     .logo-container {
         position: relative;
         width: 250px;
@@ -28,6 +30,8 @@
         background: white;
         padding: 10px;
     }
+   
+    
     @keyframes rotate {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
@@ -38,7 +42,8 @@
         100% { background-position: 0% 50%; }
     }
 </style>
-<section class="login" style="min-height: 80vh; display: flex; align-items: center;">
+
+<section class="register-page">
     <div class="container">
         <div class="row justify-content-center align-items-center">
             <div class="col-md-4 text-center">
@@ -85,11 +90,36 @@
                 <label class="form-check-label" for="exampleCheck1">J'accepte les termes et conditions</label>
             </div>
             <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+
+            <div style="display: flex; align-items: center; text-align: center; margin: 1.5rem 0; color: #6c757d;">
+                <hr style="flex-grow: 1; background-color: #6c757d;">
+                <span style="padding: 0 1rem;">ou</span>
+                <hr style="flex-grow: 1; background-color: #6c757d;">
+            </div>
+
+            <a href="{{ route('auth.google') }}" class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center" style="gap: 0.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-google" viewBox="0 0 16 16">
+                    <path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.25C3.216 7.62 4.966 9.333 8 9.333c1.337 0 2.52-.576 3.337-1.543H8V6.558h7.545z"/>
+                </svg>
+                S'inscrire avec Google
+            </a>
+
             <p class="mt-3 text-center">Vous avez déjà un compte ? <a href="{{ route('login') }}">Connectez-vous</a></p>
                 </form>
                 </div>
             </div>
         </div>
     </div>
+<script>
+  // Enforce black background once DOM is ready (final safeguard)
+  document.addEventListener('DOMContentLoaded', function() {
+    document.documentElement.style.setProperty('background-color', '#000', 'important');
+    document.documentElement.style.setProperty('background-image', 'none', 'important');
+    document.body.style.setProperty('background-color', '#000', 'important');
+    document.body.style.setProperty('background-image', 'none', 'important');
+    const app = document.getElementById('app');
+    if (app) { app.style.setProperty('background-color', '#000', 'important'); app.style.setProperty('background-image', 'none', 'important'); }
+  });
+  </script>
 </section>
 @include('_footer')

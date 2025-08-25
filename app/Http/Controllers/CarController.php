@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Car;
 use App\Models\Destination;
+use App\Models\Location;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -130,12 +131,10 @@ class CarController extends Controller
     {
         $query = Car::query();
 
-        // Handle general text search (from homepage or other forms)
-        if ($request->filled('location')) {
-            $location = $request->input('location');
-            $query->where(function ($q) use ($location) {
-                $q->where('brand', 'like', "%{$location}%")
-                  ->orWhere('model', 'like', "%{$location}%");
+        if ($request->filled('location_id')) {
+            $locationId = $request->input('location_id');
+            $query->whereHas('rentals', function ($q) use ($locationId) {
+                $q->where('location_id', $locationId);
             });
         }
 
@@ -156,15 +155,19 @@ class CarController extends Controller
 
             $query->whereDoesntHave('rentals', function ($q) use ($startDate, $endDate) {
                 $q->where(function ($query) use ($startDate, $endDate) {
-                    $query->where('start_date', '<=', $endDate)
-                          ->where('end_date', '>=', $startDate);
+                    $query->where('rental_date', '<=', $endDate)
+                          ->where('return_date', '>=', $startDate);
                 });
             });
         }
 
         $cars = $query->paginate(9)->withQueryString();
+        $locations = Location::orderBy('name')->get();
 
-        return view('cars.index', ['cars' => $cars]);
+        return view('cars.index', [
+            'cars' => $cars,
+            'locations' => $locations,
+        ]);
     }
 
     public function getAvailableDrivers(Request $request)
@@ -206,8 +209,9 @@ class CarController extends Controller
     {
         $rentals = $car->rentals()->where('status', '!=', 3)->get();
         $drivers = User::where('role', 'driver')->get();
+        $locations = Location::orderBy('name')->get();
 
-        return view('cars.show', compact('car', 'rentals', 'drivers'));
+        return view('cars.show', compact('car', 'rentals', 'drivers', 'locations'));
     }
 
     public function show(Car $car)

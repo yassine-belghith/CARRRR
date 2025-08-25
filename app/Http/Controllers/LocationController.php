@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Location;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Destination;
 
@@ -44,9 +45,9 @@ class LocationController extends Controller
             'closing_hours_weekends' => 'nullable|date_format:H:i|after:opening_hours_weekends',
         ]);
 
-        Location::create($validated);
+        $location = Location::create($validated);
 
-        return redirect()->route('locations.index')
+        return redirect()->route('dashboard.locations.index')
             ->with('success', 'Location created successfully.');
     }
 
@@ -78,7 +79,7 @@ class LocationController extends Controller
 
         $location->update($validated);
 
-        return redirect()->route('locations.index')
+        return redirect()->route('dashboard.locations.index')
             ->with('success', 'Location updated successfully');
     }
 
@@ -86,7 +87,29 @@ class LocationController extends Controller
     {
         $location->delete();
 
-        return redirect()->route('locations.index')
+        return redirect()->route('dashboard.locations.index')
             ->with('success', 'Location deleted successfully');
+    }
+
+    public function manageDrivers(Location $location)
+    {
+        $drivers = User::where('is_driver', 1)->orderBy('name')->get();
+        $assignedDriverIds = $location->drivers()->pluck('users.id')->toArray();
+
+        return view('dashboard.locations.manage-drivers', compact('location', 'drivers', 'assignedDriverIds'));
+    }
+
+    public function updateDrivers(Request $request, Location $location)
+    {
+        $request->validate([
+            'drivers' => 'nullable|array',
+            'drivers.*' => 'exists:users,id',
+        ]);
+
+        $driverIds = $request->input('drivers', []);
+        $location->drivers()->sync($driverIds);
+
+        return redirect()->route('dashboard.locations.index')
+            ->with('success', 'Drivers for ' . $location->name . ' updated successfully.');
     }
 }

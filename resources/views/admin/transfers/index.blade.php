@@ -38,14 +38,16 @@ $statusClasses = [
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle" id="dataTable" width="100%" cellspacing="0">
-                            <thead class="table-light">
+                        <table class="table table-hover">
+                            <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>Client</th>
                                     <th>Chauffeur</th>
-                                    <th>Départ (Lat, Lng)</th>
-                                    <th>Arrivée (Lat, Lng)</th>
-                                    <th>Date</th>
+                                    <th>Voiture</th>
+                                    <th>Date de Prise en Charge</th>
+                                    <th>Lieu de Prise en Charge</th>
+                                    <th>Lieu de Dépose</th>
                                     <th class="text-center">Statut</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
@@ -53,14 +55,16 @@ $statusClasses = [
                             <tbody>
                                 @forelse ($transfers as $transfer)
                                     <tr>
+                                        <td>{{ $transfer->id }}</td>
                                         <td>{{ $transfer->user->name ?? 'N/A' }}</td>
                                         <td>{{ $transfer->driver->name ?? 'Non assigné' }}</td>
+                                        <td>{{ $transfer->car->brand ?? 'N/A' }} {{ $transfer->car->model ?? '' }}</td>
+                                        <td>{{ $transfer->pickup_datetime ? $transfer->pickup_datetime->format('d/m/Y H:i') : 'N/A' }}</td>
                                         <td>{{ $transfer->pickup_latitude }}, {{ $transfer->pickup_longitude }}</td>
                                         <td>{{ $transfer->dropoff_latitude }}, {{ $transfer->dropoff_longitude }}</td>
-                                        <td>{{ $transfer->pickup_datetime ? $transfer->pickup_datetime->format('d/m/Y H:i') : 'N/A' }}</td>
                                         <td class="text-center">
                                             <span class="badge {{ $statusClasses[$transfer->status] ?? 'bg-secondary-soft text-secondary' }}">
-                                                {{ $transfer->status_label }}
+                                                {{ $transfer->status_label ?? $transfer->status }}
                                             </span>
                                         </td>
                                         <td class="text-end">
@@ -78,9 +82,9 @@ $statusClasses = [
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="6" class="text-center py-4">
-                                            <p class="mb-0 text-muted">Aucun transfert trouvé.</p>
-                                            <a href="{{ route('dashboard.transfers.create') }}" class="btn btn-primary mt-2">Créer votre premier transfert</a>
+                                        <td colspan="9" class="text-center py-4">
+                                            <p class="text-muted mb-0">Aucun transfert trouvé.</p>
+                                            <a href="{{ route('dashboard.transfers.create') }}" class="btn btn-primary btn-sm mt-2">Créer un transfert</a>
                                         </td>
                                     </tr>
                                 @endforelse
@@ -88,7 +92,7 @@ $statusClasses = [
                         </table>
                     </div>
                     @if ($transfers->hasPages())
-                        <div class="d-flex justify-content-center mt-3">
+                        <div class="card-footer bg-white py-3">
                             {{ $transfers->links() }}
                         </div>
                     @endif

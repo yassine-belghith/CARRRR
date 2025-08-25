@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
     
     protected $fillable = [
         'name', 
@@ -62,7 +63,7 @@ class User extends Authenticatable
      */
     public function locations()
     {
-        return $this->hasMany(Location::class);
+        return $this->belongsToMany(Location::class, 'driver_locations', 'driver_id', 'location_id');
     }
 
     /**
@@ -71,6 +72,11 @@ class User extends Authenticatable
     public function assignedRentals()
     {
         return $this->hasMany(Rental::class, 'driver_id');
+    }
+
+    public function maintenances()
+    {
+        return $this->hasMany(Maintenance::class, 'driver_id');
     }
 
     /**

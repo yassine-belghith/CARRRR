@@ -6,19 +6,23 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LocalizationController;
-use App\Http\Controllers\RentalController;
+use App\Http\Controllers\RentalController; 
+use App\Models\Car;
+ 
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Driver\DashboardController as DriverDashboardController;
 use App\Http\Controllers\CarController as DashboardCarController;
 use App\Http\Controllers\RentalController as DashboardRentalController;
 use App\Http\Controllers\UserController as DashboardUserController;
 use App\Http\Controllers\Admin\DestinationController;
 use App\Http\Controllers\Admin\DriverController;
-use App\Http\Controllers\TransferController as DashboardTransferController;
+use App\Http\Controllers\Admin\TransferController as DashboardTransferController;
 use App\Http\Controllers\TransferBookingController;
 use App\Http\Controllers\Dashboard\ContactMessageController;
 use App\Http\Controllers\UserPreferencesController;
 use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\LocationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +49,12 @@ Route::get('currency/{currency}', [LocalizationController::class, 'switchCurrenc
 Route::get('/unsubscribe/contact', [ContactController::class, 'unsubscribe'])->name('unsubscribe.contact');
 Route::get('/transfers', [TransferBookingController::class, 'create'])->name('transfers.book');
 Route::post('/transfers', [\App\Http\Controllers\TransferBookingController::class, 'store'])->name('transfers.store');
-Route::post('/rentals/user/{car}', [RentalController::class, 'userStore'])->name('rental.user.store')->middleware('auth');
+
+// Prevent MethodNotAllowed by providing a friendly redirect for GET
+Route::get('/rentals/user/{car}', function (\App\Models\Car $car) {
+    return redirect()->route('cars.detail', $car);
+})->name('rental.user.create');
+Route::post('/rentals/user/{car}', [\App\Http\Controllers\RentalController::class, 'userStore'])->name('rental.user.store')->middleware('auth');
 
 // Current reservation routes
 Route::get('/rentals', [RentalController::class, 'index'])->name('rentals.index');
@@ -62,7 +71,16 @@ Route::middleware('auth')->group(function () {
         Route::post('avatar', [UserPreferencesController::class, 'updateAvatar'])->name('avatar');
         Route::put('/', [UserPreferencesController::class, 'update'])->name('update');
     });
+
+    Route::get('/my-transfers', [TransferBookingController::class, 'index'])->name('transfers.my');
+    Route::get('/transfers/{transfer}/invoice', [TransferBookingController::class, 'downloadInvoice'])->name('transfers.invoice');
 });
+
+// Admin Dashboard Routes
+
+// Google Auth Routes
+Route::get('auth/google', [LoginController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('auth/google/callback', [LoginController::class, 'handleGoogleCallback']);
 
 // Authentication Routes
 Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -71,6 +89,18 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [RegisterController::class, 'register']);
+
+// Driver Dashboard Route (for users with is_driver = 1)
+Route::middleware(['auth', 'driver'])
+    ->prefix('driver')
+    ->name('driver.')
+    ->group(function () {
+        Route::get('/', [DriverDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/rentals/{rental}', [DriverDashboardController::class, 'rentalShow'])->name('rentals.show');
+        Route::get('/transfers/{transfer}', [DriverDashboardController::class, 'show'])->name('transfers.show');
+        Route::post('/transfers/{transfer}/confirm', [DriverDashboardController::class, 'confirm'])->name('transfers.confirm');
+        Route::post('/transfers/{transfer}/decline', [DriverDashboardController::class, 'decline'])->name('transfers.decline');
+    });
 
 // Admin Dashboard Routes
 Route::middleware(['auth', 'admin'])->prefix('dashboard')->name('dashboard.')->group(function () {
@@ -93,28 +123,25 @@ Route::middleware(['auth', 'admin'])->prefix('dashboard')->name('dashboard.')->g
     Route::put('users/{user}/remove-driver', [DashboardUserController::class, 'removeDriver'])->name('users.removeDriver');
 
     // Rental Management
-    Route::resource('rentals', DashboardRentalController::class);
     Route::put('rentals/{rental}/status/{status}', [DashboardRentalController::class, 'updateStatus'])->name('rentals.status');
+    Route::resource('rentals', DashboardRentalController::class);
+    Route::get('rentals/available-drivers', [\App\Http\Controllers\RentalController::class, 'availableDrivers'])->name('rentals.availableDrivers');
 
     // Other Resources
-    Route::resource('destinations', DestinationController::class);
+    Route::get('locations/{location}/drivers', [LocationController::class, 'manageDrivers'])->name('locations.manageDrivers');
+    Route::post('locations/{location}/drivers', [LocationController::class, 'updateDrivers'])->name('locations.updateDrivers');
+    Route::resource('locations', LocationController::class);
     Route::resource('drivers', DriverController::class);
     Route::resource('transfers', DashboardTransferController::class);
 
-    // Transfers
-    Route::get('transfers', [\App\Http\Controllers\Admin\TransferController::class, 'index'])->name('transfers.index');
-    Route::get('transfers/{transfer}/edit', [\App\Http\Controllers\Admin\TransferController::class, 'edit'])->name('transfers.edit');
+    // Transfers resource above already registers index, edit, update, etc. Remove duplicates to avoid route conflicts.
 
-    // Contact Messages
-    Route::resource('contact-messages', ContactMessageController::class);
+    // Contact Messages (name them with dots to match view expectations)
+    Route::resource('contact-messages', ContactMessageController::class)->names('contact-messages');
 
-    // Contact Messages
-    Route::prefix('contact-messages')->name('contact.messages.')->group(function () {
-        Route::get('/', [ContactMessageController::class, 'index'])->name('index');
-        Route::get('/{contactMessage}', [ContactMessageController::class, 'show'])->name('show');
-        Route::get('/{contactMessage}/edit', [ContactMessageController::class, 'edit'])->name('edit');
+    // Extra endpoints for contact messages beyond the resource
+    Route::prefix('contact-messages')->name('contact-messages.')->group(function () {
         Route::post('/{contactMessage}/toggle-read', [ContactMessageController::class, 'toggleReadStatus'])->name('toggle-read');
-        Route::delete('/{contactMessage}', [ContactMessageController::class, 'destroy'])->name('destroy');
         Route::delete('/multiple', [ContactMessageController::class, 'destroyMultiple'])->name('destroy-multiple');
         Route::get('/export', [ContactMessageController::class, 'export'])->name('export');
         Route::get('/stats', [ContactMessageController::class, 'stats'])->name('stats');

@@ -3,17 +3,17 @@
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    body, html {
+            body, html {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        background-color: #121212;
         color: #e0e0e0;
         min-height: 100vh;
     }
 
     /* Page Layout */
-    .products {
+            .products {
         padding: 4rem 0;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        background-color: #121212;
         min-height: 100vh;
     }
 
@@ -29,7 +29,7 @@
     }
 
     /* Filters */
-    .filtre-container {
+            .filtre-container {
         background: rgba(30, 30, 30, 0.8);
         backdrop-filter: blur(15px);
         padding: 1.8rem;
@@ -105,16 +105,65 @@
         font-size: 1.1rem;
     }
 
+    /* Results Summary */
+    .results-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        background: #1a1a1a;
+        border: 1px solid #333;
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    }
+    .results-summary .page-title {
+        margin: 0 0 0.25rem 0;
+    }
+    .search-hint {
+        margin: 0;
+        color: #9aa0a6;
+        font-size: 0.95rem;
+    }
+    .active-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.5rem; }
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.6rem;
+        background: #222;
+        border: 1px solid #333;
+        color: #e0e0e0;
+        border-radius: 999px;
+        font-size: 0.85rem;
+    }
+    .chip i { color: #3d5afe; }
+    .btn-clear {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.55rem 0.9rem;
+        background: transparent;
+        border: 1px solid #444;
+        color: #e0e0e0;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+    .btn-clear:hover { background: #2a2a2a; border-color: #555; color: #fff; }
+
     /* Car Cards */
-    .all-products .item {
+            .all-products .item {
         display: flex;
         flex-wrap: wrap;
-        background: rgba(30, 30, 30, 0.8);
+        background-color: #1a1a1a;
         border-radius: 1.2rem;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
         border: 1px solid #333;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         transition: all 0.3s ease;
     }
     
@@ -270,7 +319,24 @@
 <section class="products">
     <div class="container">
         @if(isset($search) && !empty($search))
-            <h1 class="page-title">{{ __('messages.search_results_for') }} : <span style="color:#007aff">"{{ $search }}"</span></h1>
+            <div class="results-summary">
+                <div>
+                    <h1 class="page-title">{{ __('messages.search_results_for') }} : <span style="color:#007aff">"{{ $search }}"</span></h1>
+                    <p class="search-hint">{{ method_exists($cars, 'total') ? $cars->total() : count($cars) }} {{ __('messages.results') ?? 'results' }}</p>
+                    <div class="active-chips">
+                        @if(request()->filled('location'))
+                            <span class="chip"><i class="fas fa-map-marker-alt"></i> {{ request('location') }}</span>
+                        @endif
+                        @if(request()->filled('start_date'))
+                            <span class="chip"><i class="far fa-calendar"></i> {{ request('start_date') }}</span>
+                        @endif
+                        @if(request()->filled('end_date'))
+                            <span class="chip"><i class="far fa-calendar-check"></i> {{ request('end_date') }}</span>
+                        @endif
+                    </div>
+                </div>
+                <a href="{{ url('/cars') }}" class="btn-clear"><i class="fas fa-times"></i> {{ __('messages.clear_filters') ?? 'Clear filters' }}</a>
+            </div>
         @else
             <h1 class="page-title">{{ __('messages.our_vehicles') }}</h1>
         @endif
@@ -355,13 +421,25 @@
                         @forelse ($cars as $car)
                             <div class="item">
                                 <div class="car-image">
-                                    @if($car->images && !empty($car->images[0]))
-                                        <img src="{{ asset('storage/' . $car->images[0]) }}" alt="{{ $car->brand }} {{ $car->model }}" class="img-fluid">
-                                    @else
-                                        <div class="d-flex align-items-center justify-content-center bg-dark h-100">
-                                            <i class="fas fa-car text-muted" style="font-size: 2.5rem ; "></i>
-                                        </div>
-                                    @endif
+                                    @php
+                                        $imgSrc = null;
+                                        if (!empty($car->imageUrl)) {
+                                            $imgSrc = $car->imageUrl;
+                                        } else {
+                                            $imagesRaw = $car->images ?? null;
+                                            $images = is_array($imagesRaw) ? $imagesRaw : (empty($imagesRaw) ? [] : json_decode($imagesRaw, true));
+                                            if (!is_array($images)) { $images = []; }
+                                            $firstImage = $images[0] ?? null;
+                                            if ($firstImage) {
+                                                $imgSrc = asset('storage/' . $firstImage);
+                                            }
+                                        }
+                                        if (!$imgSrc) {
+                                            $svg = '<svg xmlns="http://www.w3.org/2000/svg" width="220" height="160"><rect width="100%" height="100%" fill="#1a1a1a"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9aa0a6" font-size="16" font-family="Inter,Arial">Vehicle Image</text></svg>';
+                                            $imgSrc = 'data:image/svg+xml;charset=UTF-8,' . rawurlencode($svg);
+                                        }
+                                    @endphp
+                                    <img src="{{ $imgSrc }}" alt="{{ $car->brand }} {{ $car->model }}" class="img-fluid" />
                                 </div>
                                 <div class="item-content">
                                     <div>

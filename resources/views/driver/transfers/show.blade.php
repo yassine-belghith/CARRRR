@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.app')
 
 @section('title', 'Détails du Transfert #' . $transfer->reference_number)
 
@@ -11,9 +11,8 @@
         <div class="row">
             <div class="col-md-6">
                 <h4>Informations sur le Client</h4>
-                <p><strong>Nom :</strong> {{ $transfer->customer_name }}</p>
-                <p><strong>Email :</strong> {{ $transfer->customer_email }}</p>
-                <p><strong>Téléphone :</strong> {{ $transfer->customer_phone }}</p>
+                <p><strong>Nom :</strong> {{ optional($transfer->user)->name ?? 'N/A' }}</p>
+                <p><strong>Email :</strong> {{ optional($transfer->user)->email ?? 'N/A' }}</p>
             </div>
             <div class="col-md-6">
                 <h4>Informations sur le Vol (si applicable)</h4>
@@ -26,8 +25,24 @@
 
         <h4>Détails du Trajet</h4>
         <p><strong>Date et Heure de Prise en Charge :</strong> {{ $transfer->pickup_datetime ? $transfer->pickup_datetime->format('d/m/Y H:i') : 'Non spécifié' }}</p>
-        <p><strong>Lieu de Prise en Charge :</strong> {{ $transfer->pickup_location }}</p>
-        <p><strong>Lieu de Destination :</strong> {{ $transfer->dropoff_location }}</p>
+        <p><strong>Lieu de Prise en Charge :</strong>
+            @if(!is_null($transfer->pickup_latitude) && !is_null($transfer->pickup_longitude))
+                <a href="https://www.google.com/maps/search/?api=1&query={{ $transfer->pickup_latitude }},{{ $transfer->pickup_longitude }}" target="_blank">
+                    {{ $transfer->pickup_latitude }}, {{ $transfer->pickup_longitude }} <i class="fas fa-external-link-alt"></i>
+                </a>
+            @else
+                N/A
+            @endif
+        </p>
+        <p><strong>Lieu de Destination :</strong>
+            @if(!is_null($transfer->dropoff_latitude) && !is_null($transfer->dropoff_longitude))
+                 <a href="https://www.google.com/maps/search/?api=1&query={{ $transfer->dropoff_latitude }},{{ $transfer->dropoff_longitude }}" target="_blank">
+                    {{ $transfer->dropoff_latitude }}, {{ $transfer->dropoff_longitude }} <i class="fas fa-external-link-alt"></i>
+                </a>
+            @else
+                N/A
+            @endif
+        </p>
         <p><strong>Nombre de Passagers :</strong> {{ $transfer->passenger_count }}</p>
         <p><strong>Nombre de Bagages :</strong> {{ $transfer->luggage_count }}</p>
 

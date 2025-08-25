@@ -22,7 +22,7 @@
         justify-content: center;
         align-items: center;
         padding: 2rem;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        background: black;
     }
 
     main.py-4 {
@@ -284,15 +284,9 @@
             
             <div class="social-login">
                 <div class="social-buttons">
-                    <button type="button" class="social-btn" title="Se connecter avec Google">
+                    <a href="{{ route('auth.google') }}" class="social-btn" title="Se connecter avec Google">
                         <i class="fab fa-google"></i>
-                    </button>
-                    <button type="button" class="social-btn" title="Se connecter avec Facebook">
-                        <i class="fab fa-facebook-f"></i>
-                    </button>
-                    <button type="button" class="social-btn" title="Se connecter avec Apple">
-                        <i class="fab fa-apple"></i>
-                    </button>
+                    </a>
                 </div>
             </div>
             

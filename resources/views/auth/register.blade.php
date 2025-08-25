@@ -1,4 +1,4 @@
-@extends('layouts.app')
+    @extends('layouts.app')
 
 @push('styles')
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -22,7 +22,7 @@
         justify-content: center;
         align-items: center;
         padding: 2rem;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        background: #000 !important;
     }
 
     main.py-4 {

@@ -21,8 +21,7 @@
     <!-- Custom CSS -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     
-    <!-- AOS Animation Library -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
     
     <!-- Theme CSS -->
     <link rel="stylesheet" href="{{ asset('css/theme.css') }}" />
@@ -194,7 +193,7 @@
                 <a href="{{ route('dashboard.transfers.index') }}" class="list-group-item {{ request()->is('dashboard/transfers*') ? 'active' : '' }}">
                     <i class="fas fa-exchange-alt"></i> Transferts
                 </a>
-                <a href="{{ route('dashboard.contact.messages.index') }}" class="list-group-item {{ request()->is('dashboard/contact-messages*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard.contact-messages.index') }}" class="list-group-item {{ request()->is('dashboard/contact-messages*') ? 'active' : '' }}">
                     <i class="fas fa-envelope"></i> Messages
                 </a>
                 <div class="position-absolute bottom-0 w-100 mb-3">
@@ -242,160 +241,83 @@
     <!-- Bootstrap 5.3.0 Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- AOS Animation JS -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    
     @stack('scripts')
-    
+
     <script>
-        // Initialize AOS
-        AOS.init({
-            duration: 800,
-            easing: 'ease-in-out',
-            once: true
-        });
-        
-        // Initialize tooltips and popovers
+        // Bootstrap tooltips & popovers, sidebar toggle, and active link handling
         document.addEventListener('DOMContentLoaded', function() {
             // Tooltips
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-            
+            const tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+
             // Popovers
-            const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-            popoverTriggerList.map(function(popoverTriggerEl) {
-                return new bootstrap.Popover(popoverTriggerEl);
-            });
-            
-            // Handle active states for sidebar items
-            const currentLocation = location.href;
-            const menuItems = document.querySelectorAll('.nav-link');
-            
-            menuItems.forEach(item => {
-                if (item.href === currentLocation) {
-                    item.classList.add('active');
-                    const parent = item.parentElement;
-                    
-                    // If it's a dropdown item, also mark the parent as active
-                    if (parent.classList.contains('dropdown-item')) {
-                        const dropdown = parent.closest('.dropdown');
-                        if (dropdown) {
-                            const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
-                            if (dropdownToggle) {
-                                dropdownToggle.classList.add('active');
-                            }
-                        }
-                    }
-                }
-            });
-        });
-    </script>
-    
-    <script>
-        // Sidebar Toggle Functionality
-        document.addEventListener('DOMContentLoaded', function() {
+            const popoverTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            popoverTriggerList.forEach(el => new bootstrap.Popover(el));
+
+            // Sidebar toggle
             const sidebar = document.getElementById('sidebar-wrapper');
             const toggleBtn = document.getElementById('sidebarToggle');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
-            
-            if (!toggleBtn) return;
-            
-            // Toggle sidebar on button click
-            toggleBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                sidebar.classList.toggle('show');
-                
-                // Toggle overlay
-                if (sidebarOverlay) {
-                    sidebarOverlay.classList.toggle('active');
-                }
-                
-                // Toggle body class for mobile
-                document.body.classList.toggle('sidebar-open');
-                
-                // Toggle icon between bars and times
-                const icon = toggleBtn.querySelector('i');
-                if (sidebar.classList.contains('show')) {
-                    icon.classList.remove('fa-bars');
-                    icon.classList.add('fa-times');
-                } else {
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
-            
-            // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', function(e) {
-                if (window.innerWidth <= 991.98 && 
-                    !sidebar.contains(e.target) &&
-                    e.target !== toggleBtn && 
-                    !toggleBtn.contains(e.target) &&
-                    !e.target.classList.contains('dropdown-toggle')) {
-                    
-                    sidebar.classList.remove('show');
-                    if (sidebarOverlay) {
-                        sidebarOverlay.classList.remove('active');
-                    }
-                    document.body.classList.remove('sidebar-open');
-                    
+
+            if (toggleBtn && sidebar) {
+                toggleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    sidebar.classList.toggle('show');
+                    document.body.classList.toggle('sidebar-open');
+                    if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+
                     const icon = toggleBtn.querySelector('i');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                }
-            });
-            
-            // Handle window resize
-            function handleResize() {
-                if (window.innerWidth > 991.98) {
-                    // Desktop view
-                    sidebar.classList.add('show');
-                    if (sidebarOverlay) {
-                        sidebarOverlay.classList.remove('active');
+                    if (icon) {
+                        icon.classList.toggle('fa-bars');
+                        icon.classList.toggle('fa-times');
                     }
-                    document.body.classList.remove('sidebar-open');
-                    
-                    const icon = toggleBtn.querySelector('i');
-                    icon.classList.remove('fa-times');
-                    icon.classList.add('fa-bars');
-                } else {
-                    // Mobile view
-                    sidebar.classList.remove('show');
-                    if (sidebarOverlay) {
-                        sidebarOverlay.classList.remove('active');
+                });
+
+                document.addEventListener('click', function(e) {
+                    const isMobile = window.innerWidth <= 991.98;
+                    const clickedOutside = !sidebar.contains(e.target) && e.target !== toggleBtn && !toggleBtn.contains(e.target);
+                    if (isMobile && clickedOutside) {
+                        sidebar.classList.remove('show');
+                        document.body.classList.remove('sidebar-open');
+                        if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+                        const icon = toggleBtn.querySelector('i');
+                        if (icon) {
+                            icon.classList.add('fa-bars');
+                            icon.classList.remove('fa-times');
+                        }
                     }
-                    document.body.classList.remove('sidebar-open');
+                });
+
+                function handleResize() {
+                    if (window.innerWidth > 991.98) {
+                        sidebar.classList.add('show');
+                        document.body.classList.remove('sidebar-open');
+                        if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+                        const icon = toggleBtn.querySelector('i');
+                        if (icon) { icon.classList.add('fa-bars'); icon.classList.remove('fa-times'); }
+                    } else {
+                        sidebar.classList.remove('show');
+                        if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+                        document.body.classList.remove('sidebar-open');
+                    }
                 }
+                handleResize();
+                window.addEventListener('resize', handleResize);
             }
-            
-            // Initial check
-            handleResize();
-            window.addEventListener('resize', handleResize);
-        });
-        // Handle active states for sidebar items
-        document.addEventListener('DOMContentLoaded', function() {
+
+            // Active link highlight
             const currentLocation = location.href;
-            const menuItems = document.querySelectorAll('.nav-link');
-            
-            menuItems.forEach(item => {
+            document.querySelectorAll('.nav-link').forEach(item => {
                 if (item.href === currentLocation) {
                     item.classList.add('active');
                     const parent = item.parentElement;
-                    
-                    // If it's a dropdown item, also mark the parent as active
-                    if (parent.classList.contains('dropdown-item')) {
+                    if (parent && parent.classList.contains('dropdown-item')) {
                         const dropdown = parent.closest('.dropdown');
-                        if (dropdown) {
-                            const dropdownToggle = dropdown.querySelector('.dropdown-toggle');
-                            if (dropdownToggle) {
-                                dropdownToggle.classList.add('active');
-                            }
-                        }
+                        const dropdownToggle = dropdown ? dropdown.querySelector('.dropdown-toggle') : null;
+                        if (dropdownToggle) dropdownToggle.classList.add('active');
                     }
                 }
             });
-        });
         });
     </script>
 </body>

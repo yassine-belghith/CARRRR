@@ -52,6 +52,6 @@ class Driver extends Model
      */
     public function transfers()
     {
-        return $this->hasMany(Transfer::class);
+        return $this->hasMany(Transfer::class, 'driver_id', 'user_id');
     }
 }

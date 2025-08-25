@@ -1,7 +1,8 @@
 @csrf
 
+
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="form-group">
             <label for="user_id">Client <span class="text-danger">*</span></label>
             <select name="user_id" id="user_id" class="form-control @error('user_id') is-invalid @enderror" required>
@@ -20,7 +21,28 @@
         </div>
     </div>
     
-    <div class="col-md-6">
+    
+    
+    <div class="col-md-4">
+        <div class="form-group">
+            <label for="location_id">Lieu de prise en charge</label>
+            <select name="location_id" id="location_id" class="form-control @error('location_id') is-invalid @enderror">
+                <option value="">Sélectionner un lieu</option>
+                @foreach($locations as $location)
+                    <option value="{{ $location->id }}" {{ (old('location_id', $rental->location_id ?? '') == $location->id) ? 'selected' : '' }}>
+                        {{ $location->name }}
+                    </option>
+                @endforeach
+            </select>
+            @error('location_id')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+    </div>
+
+    <div class="col-md-4">
         <div class="form-group">
             <label for="car_id">Véhicule <span class="text-danger">*</span></label>
             <select name="car_id" id="car_id" class="form-control @error('car_id') is-invalid @enderror" required>
@@ -44,26 +66,7 @@
     </div>
 </div>
 
-<div class="row mt-3">
-    <div class="col-md-6">
-        <div class="form-group">
-            <label for="driver_id">Chauffeur</label>
-            <select name="driver_id" id="driver_id" class="form-control @error('driver_id') is-invalid @enderror">
-                <option value="">Aucun chauffeur assigné</option>
-                @foreach($drivers as $driver)
-                    <option value="{{ $driver->id }}" {{ (old('driver_id', $rental->driver_id ?? '') == $driver->id) ? 'selected' : '' }}>
-                        {{ $driver->name }} ({{ $driver->email }})
-                    </option>
-                @endforeach
-            </select>
-            @error('driver_id')
-                <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
-            @enderror
-        </div>
-    </div>
-</div>
+ 
 
 <div class="row mt-3">
     <div class="col-md-4">
@@ -133,6 +136,7 @@
                     <strong>{{ $message }}</strong>
                 </span>
             @enderror
+            <small class="text-muted">Seuls les chauffeurs disponibles seront listés après sélection des dates.</small>
         </div>
     </div>
 </div>
@@ -156,7 +160,7 @@
             <input type="number" 
                    id="days" 
                    class="form-control" 
-                   value="0" 
+                   value="{{ isset($rental) && $rental->rental_date && $rental->return_date ? max(1, $rental->return_date->diffInDays($rental->rental_date)) : 0 }}" 
                    readonly>
         </div>
     </div>
@@ -190,37 +194,80 @@
         const rentalDateInput = document.getElementById('rental_date');
         const returnDateInput = document.getElementById('return_date');
         const carSelect = document.getElementById('car_id');
-        
-        function calculateTotalPrice() {
-            const rentalDate = new Date(rentalDateInput.value);
-            const returnDate = new Date(returnDateInput.value);
-            const selectedOption = carSelect.options[carSelect.selectedIndex];
-            const pricePerDay = selectedOption ? parseFloat(selectedOption.getAttribute('data-price')) : 0;
-            
-            if (rentalDate && returnDate && !isNaN(pricePerDay) && rentalDate <= returnDate) {
-                const diffTime = Math.abs(returnDate - rentalDate);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                const totalPrice = diffDays * pricePerDay;
-                document.getElementById('total_price').value = totalPrice.toFixed(2);
-            } else {
-                document.getElementById('total_price').value = '0.00';
+        const driverSelect = document.getElementById('driver_id');
+        const daysInput = document.getElementById('days');
+        const totalPriceInput = document.getElementById('total_price');
+        const rentalId = {{ isset($rental) ? (int)$rental->id : 'null' }};
+
+        function computeDays() {
+            const sd = rentalDateInput.value;
+            const ed = returnDateInput.value;
+            if (!sd || !ed) return 0;
+            const start = new Date(sd);
+            const end = new Date(ed);
+            if (isNaN(start) || isNaN(end) || end < start) return 0;
+            const ms = end - start;
+            const diffDays = Math.max(1, Math.ceil(ms / (1000*60*60*24)));
+            return diffDays;
+        }
+
+        function updateTotals() {
+            const days = computeDays();
+            daysInput.value = days;
+            const selected = carSelect.options[carSelect.selectedIndex];
+            const pricePerDay = selected ? parseFloat(selected.getAttribute('data-price')) : 0;
+            const total = days > 0 ? (days * pricePerDay) : 0;
+            totalPriceInput.value = total.toFixed(2);
+        }
+
+        async function refreshAvailableDrivers() {
+            const sd = rentalDateInput.value;
+            const ed = returnDateInput.value;
+            const loc = document.getElementById('location_id');
+            const locationId = loc ? loc.value : null;
+            if (!sd || !ed) {
+                driverSelect.innerHTML = '<option value="">-- Sélectionner un chauffeur --</option>';
+                return;
+            }
+            try {
+                const params = new URLSearchParams({ rental_date: sd, return_date: ed });
+                if (locationId) params.append('location_id', locationId);
+                if (rentalId) params.append('rental_id', rentalId);
+                const res = await fetch(`{{ route('dashboard.rentals.availableDrivers') }}?${params.toString()}`);
+                if (!res.ok) throw new Error('HTTP '+res.status);
+                const json = await res.json();
+                const current = driverSelect.value;
+                driverSelect.innerHTML = '<option value="">-- Sélectionner un chauffeur --</option>';
+                json.data.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = `${d.name} (${d.email})`;
+                    driverSelect.appendChild(opt);
+                });
+                if (current) {
+                    const stillExists = Array.from(driverSelect.options).some(o => o.value === current);
+                    if (stillExists) driverSelect.value = current;
+                }
+            } catch (e) {
+                console.error('Failed to load available drivers', e);
             }
         }
-        
-        // Update return date min date when rental date changes
+
+        function onDatesChanged() {
+            updateTotals();
+            refreshAvailableDrivers();
+        }
+
         rentalDateInput.addEventListener('change', function() {
             returnDateInput.min = this.value;
-            calculateTotalPrice();
+            onDatesChanged();
         });
-        
-        // Recalculate when return date changes
-        returnDateInput.addEventListener('change', calculateTotalPrice);
-        
-        // Recalculate when car selection changes
-        carSelect.addEventListener('change', calculateTotalPrice);
-        
-        // Initialize calculation on page load
-        calculateTotalPrice();
+        returnDateInput.addEventListener('change', onDatesChanged);
+        carSelect.addEventListener('change', updateTotals);
+
+        // Initialize
+        updateTotals();
+        refreshAvailableDrivers();
     });
 </script>
 @endpush

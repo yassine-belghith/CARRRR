@@ -9,12 +9,15 @@ class Rental extends Model
         protected $fillable = [
         'user_id',
         'car_id',
+        'location_id',
         'driver_id',
         'rental_date',
         'return_date',
         'total_price',
         'status',
-        'notes'
+        'notes',
+        'needs_driver',
+        'driver_license_path'
     ];
 
     protected $dates = [
@@ -29,7 +32,8 @@ class Rental extends Model
         'return_date' => 'datetime',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'total_price' => 'decimal:2'
+        'total_price' => 'decimal:2',
+        'needs_driver' => 'boolean'
     ];
 
     public function user()
@@ -45,6 +49,11 @@ class Rental extends Model
     public function driver()
     {
         return $this->belongsTo(User::class, 'driver_id');
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
     }
 }
 

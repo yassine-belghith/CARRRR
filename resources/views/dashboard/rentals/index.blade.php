@@ -64,9 +64,11 @@
                             <th>#</th>
                             <th>Client</th>
                             <th>Véhicule</th>
+                            <th>Lieu</th>
                             <th>Période</th>
                             <th class="text-end">Prix Total</th>
                             <th>Statut</th>
+                            <th>Chauffeur</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -104,15 +106,24 @@
                                         </div>
                                     </div>
                                 </td>
+                                <td>{{ $rental->location->name ?? 'N/A' }}</td>
                                 <td>
                                     <div class="d-flex flex-column">
                                         <span class="fw-medium">
                                             <i class="far fa-calendar-alt me-1"></i>
-                                            {{ \Carbon\Carbon::parse($rental->start_date)->format('d/m/Y') }} - 
-                                            {{ \Carbon\Carbon::parse($rental->end_date)->format('d/m/Y') }}
+                                            {{ optional($rental->rental_date)->format('d/m/Y') }}
+                                            @if($rental->return_date)
+                                                - {{ optional($rental->return_date)->format('d/m/Y') }}
+                                            @endif
                                         </span>
                                         <small class="text-muted">
-                                            {{ $rental->days_count }} jour{{ $rental->days_count > 1 ? 's' : '' }}
+                                            @php
+                                                $days = 1;
+                                                if ($rental->rental_date && $rental->return_date) {
+                                                    $days = max(1, $rental->return_date->diffInDays($rental->rental_date));
+                                                }
+                                            @endphp
+                                            {{ $days }} jour{{ $days > 1 ? 's' : '' }}
                                         </small>
                                     </div>
                                 </td>
@@ -142,6 +153,29 @@
                                             </span>
                                             @break
                                     @endswitch
+                                </td>
+                                <td>
+                                    @if($rental->needs_driver)
+                                        @if($rental->driver_id)
+                                            <span class="badge bg-success-subtle text-success">
+                                                <i class="fas fa-user-check me-1"></i>
+                                                {{ optional($rental->driver)->name ?? 'Chauffeur assigné' }}
+                                            </span>
+                                        @else
+                                            <span class="badge bg-warning-subtle text-warning">
+                                                <i class="fas fa-user-clock me-1"></i> Besoin d’un chauffeur
+                                            </span>
+                                        @endif
+                                    @else
+                                        <span class="badge bg-secondary-subtle text-secondary">
+                                            <i class="fas fa-id-card me-1"></i> Sans chauffeur
+                                        </span>
+                                        @if($rental->driver_license_path)
+                                            <a class="ms-2 small" href="{{ asset('storage/'.$rental->driver_license_path) }}" target="_blank">
+                                                Voir permis
+                                            </a>
+                                        @endif
+                                    @endif
                                 </td>
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end">

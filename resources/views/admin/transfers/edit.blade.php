@@ -13,6 +13,16 @@
                 @csrf
                 @method('PUT')
 
+                @if($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -62,28 +72,19 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <div class="form-group">
-                            <label for="pickup_location_id">Lieu de Prise en Charge</label>
-                            <select name="pickup_location_id" id="pickup_location_id" class="form-control @error('pickup_location_id') is-invalid @enderror" required>
-                                @foreach($destinations as $destination)
-                                    <option value="{{ $destination->id }}" {{ old('pickup_location_id', $transfer->pickup_location_id) == $destination->id ? 'selected' : '' }}>{{ $destination->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('pickup_location_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <label>Lieux de Prise en Charge et de Dépose</label>
+                            <div id="map" style="height: 400px;"></div>
+                            <small class="form-text text-muted">Faites glisser les marqueurs pour ajuster les lieux.</small>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="dropoff_location_id">Lieu de Dépose</label>
-                            <select name="dropoff_location_id" id="dropoff_location_id" class="form-control @error('dropoff_location_id') is-invalid @enderror" required>
-                                @foreach($destinations as $destination)
-                                    <option value="{{ $destination->id }}" {{ old('dropoff_location_id', $transfer->dropoff_location_id) == $destination->id ? 'selected' : '' }}>{{ $destination->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('dropoff_location_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                    </div>
+                    <input type="hidden" name="pickup_latitude" id="pickup_latitude" value="{{ old('pickup_latitude', $transfer->pickup_latitude) }}">
+                    <input type="hidden" name="pickup_longitude" id="pickup_longitude" value="{{ old('pickup_longitude', $transfer->pickup_longitude) }}">
+                    <input type="hidden" name="dropoff_latitude" id="dropoff_latitude" value="{{ old('dropoff_latitude', $transfer->dropoff_latitude) }}">
+                    <input type="hidden" name="dropoff_longitude" id="dropoff_longitude" value="{{ old('dropoff_longitude', $transfer->dropoff_longitude) }}">
+                    @error('pickup_latitude')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    @error('dropoff_latitude')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                 </div>
 
                 <hr>
@@ -158,3 +159,59 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const pickupLat = parseFloat(document.getElementById('pickup_latitude').value);
+    const pickupLng = parseFloat(document.getElementById('pickup_longitude').value);
+    const dropoffLat = parseFloat(document.getElementById('dropoff_latitude').value);
+    const dropoffLng = parseFloat(document.getElementById('dropoff_longitude').value);
+
+    const map = L.map('map');
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    let pickupMarker, dropoffMarker;
+    const markers = [];
+
+    if (!isNaN(pickupLat) && !isNaN(pickupLng)) {
+        pickupMarker = L.marker([pickupLat, pickupLng], { draggable: true }).addTo(map);
+        pickupMarker.bindPopup('Point de départ').openPopup();
+        markers.push(pickupMarker);
+
+        pickupMarker.on('dragend', function(event) {
+            const position = event.target.getLatLng();
+            document.getElementById('pickup_latitude').value = position.lat;
+            document.getElementById('pickup_longitude').value = position.lng;
+        });
+    }
+
+    if (!isNaN(dropoffLat) && !isNaN(dropoffLng)) {
+        dropoffMarker = L.marker([dropoffLat, dropoffLng], { draggable: true }).addTo(map);
+        dropoffMarker.bindPopup('Point d\'arrivée').openPopup();
+        markers.push(dropoffMarker);
+
+        dropoffMarker.on('dragend', function(event) {
+            const position = event.target.getLatLng();
+            document.getElementById('dropoff_latitude').value = position.lat;
+            document.getElementById('dropoff_longitude').value = position.lng;
+        });
+    }
+
+    if (markers.length > 0) {
+        const group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.5));
+    } else {
+        map.setView([45.7640, 4.8357], 13); // Default to Lyon if no coords
+    }
+});
+</script>
+@endpush

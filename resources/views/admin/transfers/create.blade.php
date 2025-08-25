@@ -70,30 +70,19 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <div class="form-group">
-                            <label for="pickup_location_id">Lieu de Prise en Charge</label>
-                            <select name="pickup_location_id" id="pickup_location_id" class="form-control @error('pickup_location_id') is-invalid @enderror" required>
-                                <option value="">Sélectionnez un lieu</option>
-                                @foreach($destinations as $destination)
-                                    <option value="{{ $destination->id }}" {{ old('pickup_location_id') == $destination->id ? 'selected' : '' }}>{{ $destination->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('pickup_location_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <label>Lieux de Prise en Charge et de Dépose</label>
+                            <div id="map" style="height: 400px;"></div>
+                            <small class="form-text text-muted">Cliquez sur la carte pour définir le point de départ, puis cliquez à nouveau pour définir le point d'arrivée.</small>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="dropoff_location_id">Lieu de Dépose</label>
-                            <select name="dropoff_location_id" id="dropoff_location_id" class="form-control @error('dropoff_location_id') is-invalid @enderror" required>
-                                <option value="">Sélectionnez un lieu</option>
-                                @foreach($destinations as $destination)
-                                    <option value="{{ $destination->id }}" {{ old('dropoff_location_id') == $destination->id ? 'selected' : '' }}>{{ $destination->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('dropoff_location_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                        </div>
-                    </div>
+                    <input type="hidden" name="pickup_latitude" id="pickup_latitude" value="{{ old('pickup_latitude') }}">
+                    <input type="hidden" name="pickup_longitude" id="pickup_longitude" value="{{ old('pickup_longitude') }}">
+                    <input type="hidden" name="dropoff_latitude" id="dropoff_latitude" value="{{ old('dropoff_latitude') }}">
+                    <input type="hidden" name="dropoff_longitude" id="dropoff_longitude" value="{{ old('dropoff_longitude') }}">
+                    @error('pickup_latitude')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                    @error('dropoff_latitude')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                 </div>
 
                 <hr>
@@ -159,3 +148,66 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+@endpush
+
+@push('scripts')
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const map = L.map('map').setView([45.7640, 4.8357], 13); // Default to Lyon
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    let pickupMarker, dropoffMarker;
+    let settingPickup = true;
+
+    const pickupLatInput = document.getElementById('pickup_latitude');
+    const pickupLngInput = document.getElementById('pickup_longitude');
+    const dropoffLatInput = document.getElementById('dropoff_latitude');
+    const dropoffLngInput = document.getElementById('dropoff_longitude');
+
+    map.on('click', function (e) {
+        const { lat, lng } = e.latlng;
+
+        if (settingPickup) {
+            if (pickupMarker) {
+                map.removeLayer(pickupMarker);
+            }
+            pickupMarker = L.marker([lat, lng], { draggable: true }).addTo(map);
+            pickupMarker.bindPopup('Point de départ').openPopup();
+            pickupLatInput.value = lat;
+            pickupLngInput.value = lng;
+
+            pickupMarker.on('dragend', function(event) {
+                const position = event.target.getLatLng();
+                pickupLatInput.value = position.lat;
+                pickupLngInput.value = position.lng;
+            });
+
+            settingPickup = false; // Switch to setting dropoff
+        } else {
+            if (dropoffMarker) {
+                map.removeLayer(dropoffMarker);
+            }
+            dropoffMarker = L.marker([lat, lng], { draggable: true }).addTo(map);
+            dropoffMarker.bindPopup('Point d\'arrivée').openPopup();
+            dropoffLatInput.value = lat;
+            dropoffLngInput.value = lng;
+
+            dropoffMarker.on('dragend', function(event) {
+                const position = event.target.getLatLng();
+                dropoffLatInput.value = position.lat;
+                dropoffLngInput.value = position.lng;
+            });
+
+            settingPickup = true; // Switch back to setting pickup
+        }
+    });
+});
+</script>
+@endpush

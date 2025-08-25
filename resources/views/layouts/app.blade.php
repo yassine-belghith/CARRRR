@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         body {
-            background-color: #f7f7f7;
+            background-color: #121212;
+            color: #e0e0e0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
@@ -40,6 +41,12 @@
             top: 0;
             z-index: 1020;
             transition: padding 0.3s ease; /* Smooth transition */
+        }
+
+        .koyeb-navbar.scrolled {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         .koyeb-navbar .navbar-brand {
@@ -258,6 +265,22 @@
     <x-chatbot />
 
     @vite(['resources/js/app.js'])
+    <script>
+        (function() {
+            const nav = document.querySelector('.koyeb-navbar');
+            function onScroll() {
+                if (!nav) return;
+                if (window.scrollY > 20) {
+                    nav.classList.add('scrolled');
+                } else {
+                    nav.classList.remove('scrolled');
+                }
+            }
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('load', onScroll);
+            onScroll();
+        })();
+    </script>
     @stack('scripts')
 </body>
 </html>

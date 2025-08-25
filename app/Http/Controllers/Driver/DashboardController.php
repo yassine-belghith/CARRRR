@@ -29,7 +29,7 @@ class DashboardController extends Controller
 
         // Fetch assigned transfers for the logged-in driver
         $transfers = Transfer::where('driver_id', $driver->id)
-            ->with(['rental.car', 'rental.user'])
+            ->with(['user', 'car', 'pickupDestination', 'dropoffDestination'])
             ->latest()
             ->paginate(5, ['*'], 'transfers_page');
 
@@ -74,5 +74,15 @@ class DashboardController extends Controller
     public function show(Transfer $transfer)
     {
         return view('driver.transfers.show', compact('transfer'));
+    }
+
+    public function rentalShow(Rental $rental)
+    {
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($rental->driver_id !== $user->id) {
+            abort(403);
+        }
+        $rental->load(['car', 'user', 'location']);
+        return view('driver.rentals.show', compact('rental'));
     }
 }
